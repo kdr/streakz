@@ -12,6 +12,15 @@ interface CollectionResponse {
   streaks: Streak[]
 }
 
+const STREAK_COLORS = [
+  'bg-green-600',
+  'bg-blue-600',
+  'bg-purple-600',
+  'bg-pink-600',
+  'bg-orange-600',
+  'bg-teal-600'
+]
+
 export default function CollectionView() {
   const { id } = useParams()
   const [collection, setCollection] = useState<CollectionResponse | null>(null)
@@ -41,7 +50,7 @@ export default function CollectionView() {
     <main className="container max-w-2xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8">{collection.name}</h1>
       <div className="space-y-8">
-        {(collection.streaks || []).map(streak => (
+        {(collection.streaks || []).map((streak, index) => (
           <div key={streak.id} className="relative">
             <Link
               href={`/streak/${streak.id}`}
@@ -53,6 +62,7 @@ export default function CollectionView() {
             <StreakGrid
               name={streak.name}
               contributions={streak.contributions}
+              color={STREAK_COLORS[index % STREAK_COLORS.length]}
             />
           </div>
         ))}
