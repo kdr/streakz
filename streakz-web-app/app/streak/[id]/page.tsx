@@ -35,6 +35,19 @@ export default function StreakView() {
     }
   }
 
+  const handleUndoToday = async () => {
+    try {
+      await fetch('/api/streak/record', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      })
+      fetchStreak()
+    } catch (error) {
+      console.error('Failed to undo streak:', error)
+    }
+  }
+
   useEffect(() => {
     fetchStreak()
   }, [fetchStreak])
@@ -48,6 +61,7 @@ export default function StreakView() {
         name={streak.name}
         contributions={streak.contributions}
         onRecordToday={handleRecordToday}
+        onUndoToday={handleUndoToday}
       />
     </main>
   )

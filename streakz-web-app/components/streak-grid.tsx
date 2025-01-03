@@ -10,11 +10,12 @@ interface StreakGridProps {
   name: string
   contributions: Record<string, number>
   onRecordToday?: () => void
+  onUndoToday?: () => void
   year?: number
   color?: string
 }
 
-export function StreakGrid({ name, contributions = {}, onRecordToday, year = new Date().getFullYear(), color = 'bg-green-600' }: StreakGridProps) {
+export function StreakGrid({ name, contributions = {}, onRecordToday, onUndoToday, year = new Date().getFullYear(), color = 'bg-green-600' }: StreakGridProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   // Generate dates for the year
@@ -98,9 +99,16 @@ export function StreakGrid({ name, contributions = {}, onRecordToday, year = new
             {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </Button>
           {isExpanded && (
-            <div className="mt-2">
-              <Button onClick={onRecordToday} className="w-full">
-                Record Today
+            <div className="mt-2 flex gap-2">
+              <Button onClick={onRecordToday} className="flex-1">
+                Mark Today
+              </Button>
+              <Button 
+                onClick={onUndoToday} 
+                variant="outline"
+                className="flex-1"
+              >
+                Undo
               </Button>
             </div>
           )}
