@@ -42,6 +42,24 @@ class MockDatabase {
     return true
   }
 
+  async removeStreakContribution(id: string, date: string): Promise<boolean> {
+    const streakRef = doc(firebaseDb, 'streaks', id)
+    const streakDoc = await getDoc(streakRef)
+    
+    if (!streakDoc.exists()) return false
+    
+    const streak = streakDoc.data() as Streak
+    if (!streak.contributions[date]) return false
+    
+    delete streak.contributions[date]
+    
+    await updateDoc(streakRef, {
+      [`contributions.${date}`]: null
+    })
+    
+    return true
+  }
+
   // Collection methods
   async createCollection(name: string, streakIds: string[]): Promise<string> {
     const collectionsRef = collection(firebaseDb, 'collections')
