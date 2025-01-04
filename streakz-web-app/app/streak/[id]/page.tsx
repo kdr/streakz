@@ -52,6 +52,12 @@ export default function StreakView() {
     fetchStreak()
   }, [fetchStreak])
 
+  useEffect(() => {
+    if (streak?.name) {
+      document.title = `${streak.name} | Streakz`
+    }
+  }, [streak?.name])
+
   if (isLoading) return <div>Loading...</div>
   if (!streak) return <div>Streak not found</div>
 
