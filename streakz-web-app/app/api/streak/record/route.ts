@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/mock-db'
+import { db } from '@/lib/db'
 
 export async function POST(request: Request) {
   try {
-    const { id } = await request.json()
+    const { id, date } = await request.json()
     
     if (!id) {
       return NextResponse.json(
@@ -12,8 +12,14 @@ export async function POST(request: Request) {
       )
     }
 
-    const today = new Date().toISOString().split('T')[0]
-    const success = await db.updateStreakContribution(id, today)
+    if (!date || typeof date !== 'string' || !date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return NextResponse.json(
+        { error: 'Valid date in YYYY-MM-DD format is required' },
+        { status: 400 }
+      )
+    }
+
+    const success = await db.updateStreakContribution(id, date)
     
     if (!success) {
       return NextResponse.json(
@@ -34,7 +40,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const { id } = await request.json()
+    const { id, date } = await request.json()
     
     if (!id) {
       return NextResponse.json(
@@ -43,8 +49,14 @@ export async function DELETE(request: Request) {
       )
     }
 
-    const today = new Date().toISOString().split('T')[0]
-    const success = await db.removeStreakContribution(id, today)
+    if (!date || typeof date !== 'string' || !date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return NextResponse.json(
+        { error: 'Valid date in YYYY-MM-DD format is required' },
+        { status: 400 }
+      )
+    }
+
+    const success = await db.removeStreakContribution(id, date)
     
     if (!success) {
       return NextResponse.json(

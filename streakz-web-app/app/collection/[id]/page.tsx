@@ -42,6 +42,12 @@ export default function CollectionView() {
     fetchCollection()
   }, [id])
 
+  useEffect(() => {
+    if (collection?.name) {
+      document.title = `${collection.name} | Streakz`
+    }
+  }, [collection?.name])
+
   if (isLoading) return <div>Loading...</div>
   if (!collection) return <div>Collection not found</div>
   if (!collection.streaks) return <div>No streaks found in this collection</div>

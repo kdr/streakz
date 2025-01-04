@@ -22,13 +22,30 @@ export default function StreakView() {
     }
   }, [id])
 
+  const getLocalDate = () => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const handleRecordToday = async () => {
     try {
-      await fetch('/api/streak/record', {
+      const response = await fetch('/api/streak/record', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
+        body: JSON.stringify({ 
+          id,
+          date: getLocalDate()
+        })
       })
+      
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to record streak')
+      }
+      
       fetchStreak()
     } catch (error) {
       console.error('Failed to record streak:', error)
@@ -37,11 +54,20 @@ export default function StreakView() {
 
   const handleUndoToday = async () => {
     try {
-      await fetch('/api/streak/record', {
+      const response = await fetch('/api/streak/record', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
+        body: JSON.stringify({ 
+          id,
+          date: getLocalDate()
+        })
       })
+      
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to undo streak')
+      }
+      
       fetchStreak()
     } catch (error) {
       console.error('Failed to undo streak:', error)
@@ -51,6 +77,12 @@ export default function StreakView() {
   useEffect(() => {
     fetchStreak()
   }, [fetchStreak])
+
+  useEffect(() => {
+    if (streak?.name) {
+      document.title = `${streak.name} | Streakz`
+    }
+  }, [streak?.name])
 
   if (isLoading) return <div>Loading...</div>
   if (!streak) return <div>Streak not found</div>
