@@ -12,6 +12,13 @@ export async function POST(request: Request) {
       )
     }
 
+    if (!date || typeof date !== 'string' || !date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return NextResponse.json(
+        { error: 'Valid date in YYYY-MM-DD format is required' },
+        { status: 400 }
+      )
+    }
+
     const success = await db.updateStreakContribution(id, date)
     
     if (!success) {
@@ -38,6 +45,13 @@ export async function DELETE(request: Request) {
     if (!id) {
       return NextResponse.json(
         { error: 'Streak ID is required' },
+        { status: 400 }
+      )
+    }
+
+    if (!date || typeof date !== 'string' || !date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return NextResponse.json(
+        { error: 'Valid date in YYYY-MM-DD format is required' },
         { status: 400 }
       )
     }
