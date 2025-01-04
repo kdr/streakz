@@ -2,7 +2,7 @@ import { db as firebaseDb } from './firebase'
 import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { Streak, Collection } from '@/types/streak'
 
-class MockDatabase {
+class Database {
   // Streak methods
   async createStreak(name: string): Promise<string> {
     const streaksRef = collection(firebaseDb, 'streaks')
@@ -96,5 +96,5 @@ class MockDatabase {
   }
 }
 
-export const db = new MockDatabase()
+export const db = new Database()
 
