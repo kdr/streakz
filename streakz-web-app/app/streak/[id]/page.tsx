@@ -22,12 +22,20 @@ export default function StreakView() {
     }
   }, [id])
 
+  const getLocalDate = () => {
+    const now = new Date()
+    return now.toLocaleDateString('en-CA') // Returns YYYY-MM-DD in local timezone
+  }
+
   const handleRecordToday = async () => {
     try {
       await fetch('/api/streak/record', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
+        body: JSON.stringify({ 
+          id,
+          date: getLocalDate()
+        })
       })
       fetchStreak()
     } catch (error) {
@@ -40,7 +48,10 @@ export default function StreakView() {
       await fetch('/api/streak/record', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
+        body: JSON.stringify({ 
+          id,
+          date: getLocalDate()
+        })
       })
       fetchStreak()
     } catch (error) {

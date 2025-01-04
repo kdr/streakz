@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 
 export async function POST(request: Request) {
   try {
-    const { id } = await request.json()
+    const { id, date } = await request.json()
     
     if (!id) {
       return NextResponse.json(
@@ -12,8 +12,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const today = new Date().toISOString().split('T')[0]
-    const success = await db.updateStreakContribution(id, today)
+    const success = await db.updateStreakContribution(id, date)
     
     if (!success) {
       return NextResponse.json(
@@ -34,7 +33,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const { id } = await request.json()
+    const { id, date } = await request.json()
     
     if (!id) {
       return NextResponse.json(
@@ -43,8 +42,7 @@ export async function DELETE(request: Request) {
       )
     }
 
-    const today = new Date().toISOString().split('T')[0]
-    const success = await db.removeStreakContribution(id, today)
+    const success = await db.removeStreakContribution(id, date)
     
     if (!success) {
       return NextResponse.json(
