@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 
 export async function POST(request: Request) {
   try {
-    const { id, date } = await request.json()
+    const { id, date, action } = await request.json()
     
     if (!id) {
       return NextResponse.json(
@@ -19,20 +19,31 @@ export async function POST(request: Request) {
       )
     }
 
-    const success = await db.updateStreakContribution(id, date)
+    let success = false;
+    
+    switch (action) {
+      case 'decrement':
+        success = await db.decrementStreakContribution(id, date)
+        break
+      case 'clear':
+        success = await db.removeStreakContribution(id, date)
+        break
+      default: // increment (default behavior)
+        success = await db.updateStreakContribution(id, date)
+    }
     
     if (!success) {
       return NextResponse.json(
-        { error: 'Streak not found' },
+        { error: 'Failed to update streak' },
         { status: 404 }
       )
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error recording streak:', error)
+    console.error('Error updating streak:', error)
     return NextResponse.json(
-      { error: 'Failed to record streak' },
+      { error: 'Failed to update streak' },
       { status: 500 }
     )
   }
