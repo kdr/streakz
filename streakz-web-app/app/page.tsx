@@ -14,13 +14,23 @@ export default function Home() {
         Track your daily habits and build consistency with Streakz. Whether it&apos;s coding, reading, or exercising,
         visualize your progress over time with our GitHub-inspired contribution calendar.
       </p>
-      <div className="flex gap-4">
-        <Button asChild>
-          <Link href="/new/streak">Create a Streak</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/new/collection">Create a Collection</Link>
-        </Button>
+      <div className="space-y-4">
+        <div className="flex gap-4">
+          <Button asChild>
+            <Link href="/new/streak">Create a Streak</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/new/collection">Create a Collection</Link>
+          </Button>
+        </div>
+        <div className="flex gap-4">
+          <Button asChild>
+            <Link href="/new/goal">Create a Goal</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/new/goals">Create a Goal Set</Link>
+          </Button>
+        </div>
       </div>
     </main>
   )

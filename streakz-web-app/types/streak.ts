@@ -10,3 +10,16 @@ export interface Collection {
   streakIds: string[]
 }
 
+export interface Goal {
+  id: string
+  name: string
+  targetValue: number
+  progress: Record<string, number>
+}
+
+export interface GoalSet {
+  id: string
+  name: string
+  goalIds: string[]
+}
+
