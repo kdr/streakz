@@ -1,6 +1,6 @@
 import { db as firebaseDb } from './firebase'
 import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
-import { Streak, Collection } from '@/types/streak'
+import { Streak, Collection, Goal, GoalSet } from '@/types/streak'
 
 class Database {
   // Streak methods
@@ -115,6 +115,81 @@ class Database {
     return {
       name: collectionData.name,
       streaks
+    }
+  }
+
+  // Goal methods
+  async createGoal(name: string, targetValue: number): Promise<string> {
+    const goalsRef = collection(firebaseDb, 'goals')
+    const newGoalRef = doc(goalsRef)
+    
+    const goal: Goal = {
+      id: newGoalRef.id,
+      name: name.trim(),
+      targetValue,
+      progress: {}
+    }
+    
+    await setDoc(newGoalRef, goal)
+    return newGoalRef.id
+  }
+
+  async getGoal(id: string): Promise<Goal | undefined> {
+    const goalRef = doc(firebaseDb, 'goals', id)
+    const goalDoc = await getDoc(goalRef)
+    
+    if (!goalDoc.exists()) return undefined
+    return goalDoc.data() as Goal
+  }
+
+  async updateGoalProgress(id: string, date: string, value: number): Promise<boolean> {
+    const goalRef = doc(firebaseDb, 'goals', id)
+    const goalDoc = await getDoc(goalRef)
+    
+    if (!goalDoc.exists()) return false
+    
+    const goal = goalDoc.data() as Goal
+    goal.progress[date] = value
+    
+    await updateDoc(goalRef, {
+      [`progress.${date}`]: value
+    })
+    
+    return true
+  }
+
+  // Goal Set methods
+  async createGoalSet(name: string, goalIds: string[]): Promise<string> {
+    const goalSetsRef = collection(firebaseDb, 'goalSets')
+    const newGoalSetRef = doc(goalSetsRef)
+    
+    const goalSet: GoalSet = {
+      id: newGoalSetRef.id,
+      name: name.trim(),
+      goalIds
+    }
+    
+    await setDoc(newGoalSetRef, goalSet)
+    return newGoalSetRef.id
+  }
+
+  async getGoalSet(id: string): Promise<{ name: string; goals: Goal[] } | undefined> {
+    const goalSetRef = doc(firebaseDb, 'goalSets', id)
+    const goalSetDoc = await getDoc(goalSetRef)
+    
+    if (!goalSetDoc.exists()) return undefined
+    
+    const goalSetData = goalSetDoc.data() as GoalSet
+    const goals: Goal[] = []
+    
+    for (const goalId of goalSetData.goalIds) {
+      const goal = await this.getGoal(goalId)
+      if (goal) goals.push(goal)
+    }
+    
+    return {
+      name: goalSetData.name,
+      goals
     }
   }
 }
