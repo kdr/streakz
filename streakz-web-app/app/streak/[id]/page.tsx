@@ -52,25 +52,49 @@ export default function StreakView() {
     }
   }
 
-  const handleUndoToday = async () => {
+  const handleDecrementToday = async () => {
     try {
       const response = await fetch('/api/streak/record', {
-        method: 'DELETE',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           id,
-          date: getLocalDate()
+          date: getLocalDate(),
+          action: 'decrement'
         })
       })
       
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Failed to undo streak')
+        throw new Error(data.error || 'Failed to update streak')
       }
       
       fetchStreak()
     } catch (error) {
-      console.error('Failed to undo streak:', error)
+      console.error('Failed to update streak:', error)
+    }
+  }
+
+  const handleClearToday = async () => {
+    try {
+      const response = await fetch('/api/streak/record', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          id,
+          date: getLocalDate(),
+          action: 'clear'
+        })
+      })
+      
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to update streak')
+      }
+      
+      fetchStreak()
+    } catch (error) {
+      console.error('Failed to update streak:', error)
     }
   }
 
@@ -89,12 +113,15 @@ export default function StreakView() {
 
   return (
     <main className="container max-w-2xl mx-auto px-4 py-8">
-      <StreakGrid
-        name={streak.name}
-        contributions={streak.contributions}
-        onRecordToday={handleRecordToday}
-        onUndoToday={handleUndoToday}
-      />
+      {streak && (
+        <StreakGrid
+          name={streak.name}
+          contributions={streak.contributions}
+          onRecordToday={handleRecordToday}
+          onDecrementToday={handleDecrementToday}
+          onClearToday={handleClearToday}
+        />
+      )}
     </main>
   )
 }

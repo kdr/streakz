@@ -60,6 +60,29 @@ class Database {
     return true
   }
 
+  async decrementStreakContribution(id: string, date: string): Promise<boolean> {
+    const streakRef = doc(firebaseDb, 'streaks', id)
+    const streakDoc = await getDoc(streakRef)
+    
+    if (!streakDoc.exists()) return false
+    
+    const streak = streakDoc.data() as Streak
+    const currentValue = streak.contributions[date] || 0
+    
+    // Don't allow negative values
+    const newValue = Math.max(0, currentValue - 1)
+    
+    if (newValue === 0) {
+      await this.removeStreakContribution(id, date)
+    } else {
+      await updateDoc(streakRef, {
+        [`contributions.${date}`]: newValue
+      })
+    }
+    
+    return true
+  }
+
   // Collection methods
   async createCollection(name: string, streakIds: string[]): Promise<string> {
     const collectionsRef = collection(firebaseDb, 'collections')
