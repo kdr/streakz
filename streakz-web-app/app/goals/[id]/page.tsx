@@ -39,7 +39,7 @@ const LINE_COLORS = [
 ]
 
 type ViewType = 'progress' | 'streak' | 'ring' | 'chart'
-type TimeRange = 'ytd' | 'week' | 'month' | '90days'
+type TimeRange = 'ytd' | 'week' | 'month' | '90days' | 'year'
 
 interface GoalSetResponse {
   name: string
@@ -52,6 +52,7 @@ export default function GoalSetView() {
   const [isLoading, setIsLoading] = useState(true)
   const [viewType, setViewType] = useState<ViewType>('progress')
   const [timeRange, setTimeRange] = useState<TimeRange>('ytd')
+  const [showTarget, setShowTarget] = useState(false)
 
   const fetchGoalSet = useCallback(async () => {
     try {
@@ -133,36 +134,54 @@ export default function GoalSetView() {
             </Button>
           </div>
           {viewType === 'chart' && (
-            <div className="flex gap-2">
-              <Button
-                variant={timeRange === 'ytd' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTimeRange('ytd')}
-              >
-                YTD
-              </Button>
-              <Button
-                variant={timeRange === 'week' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTimeRange('week')}
-              >
-                Last Week
-              </Button>
-              <Button
-                variant={timeRange === 'month' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTimeRange('month')}
-              >
-                Last Month
-              </Button>
-              <Button
-                variant={timeRange === '90days' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTimeRange('90days')}
-              >
-                Last 90 Days
-              </Button>
-            </div>
+            <>
+              <div className="flex gap-2">
+                <Button
+                  variant={timeRange === 'ytd' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTimeRange('ytd')}
+                >
+                  YTD
+                </Button>
+                <Button
+                  variant={timeRange === 'year' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTimeRange('year')}
+                >
+                  Full Year
+                </Button>
+                <Button
+                  variant={timeRange === 'week' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTimeRange('week')}
+                >
+                  Last Week
+                </Button>
+                <Button
+                  variant={timeRange === 'month' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTimeRange('month')}
+                >
+                  Last Month
+                </Button>
+                <Button
+                  variant={timeRange === '90days' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTimeRange('90days')}
+                >
+                  Last 90 Days
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant={showTarget ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setShowTarget(!showTarget)}
+                >
+                  {showTarget ? 'Hide Target Line' : 'Show Target Line'}
+                </Button>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -192,6 +211,7 @@ export default function GoalSetView() {
                   goal={goal}
                   color={lineColor}
                   timeRange={timeRange}
+                  showTarget={showTarget}
                 />
               </div>
             )
