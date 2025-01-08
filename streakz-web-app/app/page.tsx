@@ -31,6 +31,14 @@ export default function Home() {
             <Link href="/new/goals">Create Accumulative Goal Set</Link>
           </Button>
         </div>
+        <div className="flex gap-4">
+          <Button asChild>
+            <Link href="/new/tracked-value">Create Value Tracker</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/new/tracked-values">Create Value Tracker Set</Link>
+          </Button>
+        </div>
       </div>
     </main>
   )

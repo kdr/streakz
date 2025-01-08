@@ -23,3 +23,18 @@ export interface GoalSet {
   goalIds: string[]
 }
 
+export interface TrackedValue {
+  id: string
+  name: string
+  targetValue: number
+  startValue: number
+  startDate: string // YYYY-MM-DD format
+  values: Record<string, number>
+}
+
+export interface TrackedValueSet {
+  id: string
+  name: string
+  trackedValueIds: string[]
+}
+
