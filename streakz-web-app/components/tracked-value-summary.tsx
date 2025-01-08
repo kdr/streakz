@@ -50,20 +50,20 @@ export function TrackedValueSummary({
 
       <div className="grid grid-cols-4 gap-4 mb-4">
         <div className={cn("p-4 rounded-lg flex flex-col items-center justify-center", color)}>
-          <span className="text-3xl font-bold text-white">{latestValue.toFixed(2)}</span>
-          <span className="text-sm text-white/80">Latest Value</span>
+          <span className="text-3xl font-bold text-white">{Math.round(latestValue)}</span>
+          <span className="text-sm text-white/80">Latest</span>
         </div>
         <div className={cn("p-4 rounded-lg flex flex-col items-center justify-center", color)}>
-          <span className="text-3xl font-bold text-white">{trackedValue.targetValue.toFixed(2)}</span>
-          <span className="text-sm text-white/80">Target Value</span>
+          <span className="text-3xl font-bold text-white">{Math.round(trackedValue.targetValue)}</span>
+          <span className="text-sm text-white/80">Target</span>
         </div>
         <div className="p-4 rounded-lg flex flex-col items-center justify-center bg-muted">
-          <span className="text-3xl font-bold">{minValue.toFixed(2)}</span>
-          <span className="text-sm text-muted-foreground">Min Value</span>
+          <span className="text-3xl font-bold">{Math.round(minValue)}</span>
+          <span className="text-sm text-muted-foreground">Min</span>
         </div>
         <div className="p-4 rounded-lg flex flex-col items-center justify-center bg-muted">
-          <span className="text-3xl font-bold">{maxValue.toFixed(2)}</span>
-          <span className="text-sm text-muted-foreground">Max Value</span>
+          <span className="text-3xl font-bold">{Math.round(maxValue)}</span>
+          <span className="text-sm text-muted-foreground">Max</span>
         </div>
       </div>
 

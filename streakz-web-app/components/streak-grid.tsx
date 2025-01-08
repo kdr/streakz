@@ -84,24 +84,24 @@ export function StreakGrid({
         </span>
       </div>
       
-      <div className="overflow-x-auto">
-        <div className="inline-block min-w-full">
-          <div className="grid grid-flow-col gap-1 mb-1 text-xs text-muted-foreground">
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="min-w-full px-4 sm:px-0">
+          <div className="grid grid-flow-col auto-cols-min gap-[2px] mb-[2px] text-xs text-muted-foreground">
             {monthLabels.map((month, i) => (
-              <div key={i} className="w-3 text-start">
+              <div key={i} className="w-2 sm:w-3 text-start">
                 {month}
               </div>
             ))}
           </div>
 
-          <div className="inline-grid grid-flow-col gap-1">
+          <div className="grid grid-flow-col auto-cols-min gap-[2px]">
             {weeks.map((week, i) => (
-              <div key={i} className="grid grid-rows-7 gap-1">
+              <div key={i} className="grid grid-rows-7 gap-[2px]">
                 {week.map(date => (
                   <div
                     key={date}
                     className={cn(
-                      "w-3 h-3 rounded-sm cursor-default",
+                      "w-2 h-2 sm:w-3 sm:h-3 rounded-sm cursor-default",
                       safeContributions[date] ? color : "bg-muted"
                     )}
                     title={`${formatDate(date)}: ${safeContributions[date] || 0} recorded`}
