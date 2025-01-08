@@ -25,10 +25,10 @@ export default function Home() {
         </div>
         <div className="flex gap-4">
           <Button asChild>
-            <Link href="/new/goal">Create a Goal</Link>
+            <Link href="/new/goal">Create Accumulative Goal</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/new/goals">Create a Goal Set</Link>
+            <Link href="/new/goals">Create Accumulative Goal Set</Link>
           </Button>
         </div>
       </div>

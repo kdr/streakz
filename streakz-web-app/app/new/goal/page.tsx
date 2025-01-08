@@ -49,7 +49,11 @@ export default function NewGoal() {
 
   return (
     <main className="container max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Create a New Goal</h1>
+      <h1 className="text-4xl font-bold mb-4">Create an Accumulative Goal</h1>
+      <p className="text-lg mb-8">
+        Track progress towards a numeric target by accumulating values over time. Perfect for tracking miles run,
+        pages read, hours practiced, or any other measurable goal where progress adds up.
+      </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="name">Name your goal</Label>
@@ -57,7 +61,7 @@ export default function NewGoal() {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g., Run 100 Miles"
+            placeholder="e.g., Run 500 Miles in 2024"
             required
           />
         </div>
@@ -69,9 +73,12 @@ export default function NewGoal() {
             step="any"
             value={targetValue}
             onChange={(e) => setTargetValue(e.target.value)}
-            placeholder="e.g., 100"
+            placeholder="e.g., 500"
             required
           />
+          <p className="text-sm text-muted-foreground mt-1">
+            The total value you want to reach. Your progress will accumulate towards this target.
+          </p>
         </div>
         <Button type="submit" disabled={isLoading}>
           {isLoading ? 'Creating...' : 'Create Goal'}

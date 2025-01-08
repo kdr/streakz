@@ -62,7 +62,11 @@ export default function NewGoalSet() {
 
   return (
     <main className="container max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Create a Goal Set</h1>
+      <h1 className="text-4xl font-bold mb-4">Create an Accumulative Goal Set</h1>
+      <p className="text-lg mb-8">
+        Group related accumulative goals together to track and visualize their progress in one place.
+        Perfect for organizing multiple goals with similar themes, like fitness targets or learning objectives.
+      </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="name">Set Name</Label>
@@ -70,7 +74,7 @@ export default function NewGoalSet() {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g., Fitness Goals"
+            placeholder="e.g., 2024 Fitness Goals"
             required
           />
         </div>
@@ -84,7 +88,7 @@ export default function NewGoalSet() {
             required
           />
           <p className="text-sm text-muted-foreground mt-1">
-            Enter each goal ID on a new line. You can find the ID in the URL when viewing a goal.
+            Enter each accumulative goal ID on a new line. You can find the ID in the URL when viewing a goal.
           </p>
         </div>
         <Button type="submit" disabled={isLoading}>
