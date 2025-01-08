@@ -1,6 +1,7 @@
 import { db as firebaseDb } from './firebase'
 import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
-import { Streak, Collection, Goal, GoalSet } from '@/types/streak'
+import { Streak, Collection, Goal, GoalSet, TrackedValue, TrackedValueSet } from '@/types/streak'
+import { format, startOfYear } from 'date-fns'
 
 class Database {
   // Streak methods
@@ -190,6 +191,84 @@ class Database {
     return {
       name: goalSetData.name,
       goals
+    }
+  }
+
+  // Tracked Value methods
+  async createTrackedValue(name: string, targetValue: number, startValue?: number, startDate?: string): Promise<string> {
+    const trackedValuesRef = collection(firebaseDb, 'trackedValues')
+    const newTrackedValueRef = doc(trackedValuesRef)
+    
+    const defaultStartDate = format(startOfYear(new Date()), 'yyyy-MM-dd')
+    
+    const trackedValue: TrackedValue = {
+      id: newTrackedValueRef.id,
+      name: name.trim(),
+      targetValue,
+      startValue: startValue ?? 0,
+      startDate: startDate ?? defaultStartDate,
+      values: {
+        [startDate ?? defaultStartDate]: startValue ?? 0
+      }
+    }
+    
+    await setDoc(newTrackedValueRef, trackedValue)
+    return newTrackedValueRef.id
+  }
+
+  async getTrackedValue(id: string): Promise<TrackedValue | undefined> {
+    const trackedValueRef = doc(firebaseDb, 'trackedValues', id)
+    const trackedValueDoc = await getDoc(trackedValueRef)
+    
+    if (!trackedValueDoc.exists()) return undefined
+    return trackedValueDoc.data() as TrackedValue
+  }
+
+  async updateTrackedValue(id: string, date: string, value: number): Promise<boolean> {
+    const trackedValueRef = doc(firebaseDb, 'trackedValues', id)
+    const trackedValueDoc = await getDoc(trackedValueRef)
+    
+    if (!trackedValueDoc.exists()) return false
+    
+    await updateDoc(trackedValueRef, {
+      [`values.${date}`]: value
+    })
+    
+    return true
+  }
+
+  // Tracked Value Set methods
+  async createTrackedValueSet(name: string, trackedValueIds: string[]): Promise<string> {
+    const trackedValueSetsRef = collection(firebaseDb, 'trackedValueSets')
+    const newTrackedValueSetRef = doc(trackedValueSetsRef)
+    
+    const trackedValueSet: TrackedValueSet = {
+      id: newTrackedValueSetRef.id,
+      name: name.trim(),
+      trackedValueIds
+    }
+    
+    await setDoc(newTrackedValueSetRef, trackedValueSet)
+    return newTrackedValueSetRef.id
+  }
+
+  async getTrackedValueSet(id: string): Promise<{ name: string; trackedValues: TrackedValue[] } | undefined> {
+    const trackedValueSetRef = doc(firebaseDb, 'trackedValueSets', id)
+    const trackedValueSetDoc = await getDoc(trackedValueSetRef)
+    
+    if (!trackedValueSetDoc.exists()) return undefined
+    
+    const trackedValueSetData = trackedValueSetDoc.data() as TrackedValueSet
+    const trackedValues: TrackedValue[] = []
+    
+    for (const trackedValueId of trackedValueSetData.trackedValueIds) {
+      const trackedValue = await this.getTrackedValue(trackedValueId)
+      if (trackedValue) trackedValues.push(trackedValue)
+    }
+    
+    return {
+      name: trackedValueSetData.name,
+      trackedValues
     }
   }
 }
