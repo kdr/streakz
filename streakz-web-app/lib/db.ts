@@ -1,7 +1,17 @@
 import { db as firebaseDb } from './firebase'
 import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
-import { Streak, Collection, Goal, GoalSet, TrackedValue, TrackedValueSet } from '@/types/streak'
+import { Streak, Collection, Goal, GoalSet, TrackedValue, TrackedValueSet, SuperSet } from '@/types/streak'
 import { format, startOfYear } from 'date-fns'
+
+interface SuperSetResponse {
+  name: string
+  sets: Array<{
+    id: string
+    type: 'streak' | 'trackedValue' | 'goal'
+    name: string
+    items: Array<Streak | TrackedValue | Goal>
+  }>
+}
 
 class Database {
   // Streak methods
@@ -269,6 +279,75 @@ class Database {
     return {
       name: trackedValueSetData.name,
       trackedValues
+    }
+  }
+
+  // Super Set methods
+  async createSuperSet(name: string, setIds: Array<{ id: string; type: 'streak' | 'trackedValue' | 'goal' }>): Promise<string> {
+    const superSetsRef = collection(firebaseDb, 'superSets')
+    const newSuperSetRef = doc(superSetsRef)
+    
+    const superSet: SuperSet = {
+      id: newSuperSetRef.id,
+      name: name.trim(),
+      setIds
+    }
+    
+    await setDoc(newSuperSetRef, superSet)
+    return newSuperSetRef.id
+  }
+
+  async getSuperSet(id: string): Promise<SuperSetResponse | undefined> {
+    const superSetRef = doc(firebaseDb, 'superSets', id)
+    const superSetDoc = await getDoc(superSetRef)
+    
+    if (!superSetDoc.exists()) return undefined
+    
+    const superSetData = superSetDoc.data() as SuperSet
+    const sets: Array<{
+      id: string
+      type: 'streak' | 'trackedValue' | 'goal'
+      name: string
+      items: Array<Streak | TrackedValue | Goal>
+    }> = []
+    
+    for (const { id: setId, type } of superSetData.setIds) {
+      let name = ''
+      let items: Array<Streak | TrackedValue | Goal> = []
+      
+      if (type === 'streak') {
+        const collection = await this.getCollection(setId)
+        if (collection) {
+          name = collection.name
+          items = collection.streaks
+        }
+      } else if (type === 'trackedValue') {
+        const trackedValueSet = await this.getTrackedValueSet(setId)
+        if (trackedValueSet) {
+          name = trackedValueSet.name
+          items = trackedValueSet.trackedValues
+        }
+      } else if (type === 'goal') {
+        const goalSet = await this.getGoalSet(setId)
+        if (goalSet) {
+          name = goalSet.name
+          items = goalSet.goals
+        }
+      }
+      
+      if (name) {
+        sets.push({
+          id: setId,
+          type,
+          name,
+          items
+        })
+      }
+    }
+    
+    return {
+      name: superSetData.name,
+      sets
     }
   }
 }

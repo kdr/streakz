@@ -50,12 +50,17 @@ export function Goal({
         )}
       </div>
 
-      <ProgressBar
-        value={totalProgress}
-        max={goal.targetValue}
-        color={color}
-        className="mb-4"
-      />
+      <div className="relative">
+        <ProgressBar
+          value={totalProgress}
+          max={goal.targetValue}
+          color={color}
+          className="mb-4"
+        />
+        <span className="absolute right-0 -top-5 text-xs text-muted-foreground">
+          Target: {goal.targetValue.toFixed(2)}
+        </span>
+      </div>
 
       {onRecordProgress && showDetails && (
         <div className="mt-4">
