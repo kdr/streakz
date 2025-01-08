@@ -39,6 +39,9 @@ export default function Home() {
             <Link href="/new/tracked-values">Create Value Tracker Set</Link>
           </Button>
         </div>
+        <Button asChild>
+          <Link href="/new/super-set">Create Super Set</Link>
+        </Button>
       </div>
     </main>
   )

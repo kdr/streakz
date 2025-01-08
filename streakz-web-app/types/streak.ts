@@ -38,3 +38,12 @@ export interface TrackedValueSet {
   trackedValueIds: string[]
 }
 
+export interface SuperSet {
+  id: string
+  name: string
+  setIds: Array<{
+    id: string
+    type: 'streak' | 'trackedValue' | 'goal'
+  }>
+}
+

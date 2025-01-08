@@ -14,6 +14,8 @@ interface StreakGridProps {
   onClearToday?: () => void
   color?: string
   year?: number
+  showPadding?: boolean
+  hasBorder?: boolean
 }
 
 export function StreakGrid({ 
@@ -23,7 +25,9 @@ export function StreakGrid({
   onDecrementToday,
   onClearToday,
   year = new Date().getFullYear(),
-  color = 'bg-green-600' 
+  color = 'bg-green-600',
+  showPadding = true,
+  hasBorder = false
 }: StreakGridProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -68,7 +72,11 @@ export function StreakGrid({
   }
 
   return (
-    <div className="p-4 border rounded-lg bg-card">
+    <div className={cn(
+      "bg-card",
+      hasBorder && "border rounded-lg",
+      showPadding && "p-6"
+    )}>
       <div className="mb-4">
         <h2 className="text-2xl font-bold">{name}</h2>
         <span className="text-sm text-muted-foreground">
@@ -77,7 +85,7 @@ export function StreakGrid({
       </div>
       
       <div className="overflow-x-auto">
-        <div>
+        <div className="inline-block min-w-full">
           <div className="grid grid-flow-col gap-1 mb-1 text-xs text-muted-foreground">
             {monthLabels.map((month, i) => (
               <div key={i} className="w-3 text-start">
