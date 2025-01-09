@@ -6,15 +6,16 @@ import Link from 'next/link'
 import { TrackedValueSummary } from '@/components/tracked-value-summary'
 import { Goal } from '@/components/goal'
 import { Streak } from '@/components/streak'
-import type { Streak as StreakType, TrackedValue, Goal as GoalType } from '@/types/streak'
+import { Checklist } from '@/components/checklist'
+import type { Streak as StreakType, TrackedValue, Goal as GoalType, ChecklistItem } from '@/types/streak'
 
 interface SuperSetResponse {
   name: string
   sets: Array<{
     id: string
-    type: 'streak' | 'trackedValue' | 'goal'
+    type: 'streak' | 'trackedValue' | 'goal' | 'checklist'
     name: string
-    items: Array<StreakType | TrackedValue | GoalType>
+    items: Array<StreakType | TrackedValue | GoalType | ChecklistItem>
   }>
 }
 
@@ -45,6 +46,43 @@ export default function SuperSetView() {
     }
   }, [params.id])
 
+  const handleCompleteChecklistItem = async (checklistId: string, itemId: string, date: string) => {
+    try {
+      await fetch('/api/checklist-item/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          id: itemId,
+          date
+        })
+      })
+
+      // Refresh the super set data
+      const response = await fetch(`/api/super-sets/${params.id}`)
+      const data = await response.json()
+      setSuperSet(data)
+    } catch (error) {
+      console.error('Failed to complete checklist item:', error)
+    }
+  }
+
+  const handleClearChecklistItem = async (checklistId: string, itemId: string) => {
+    try {
+      await fetch('/api/checklist-item/clear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: itemId })
+      })
+
+      // Refresh the super set data
+      const response = await fetch(`/api/super-sets/${params.id}`)
+      const data = await response.json()
+      setSuperSet(data)
+    } catch (error) {
+      console.error('Failed to clear checklist item:', error)
+    }
+  }
+
   if (error) {
     return (
       <div className="p-4">
@@ -73,7 +111,8 @@ export default function SuperSetView() {
               <Link 
                 href={`/${set.type === 'streak' ? 'collection' : 
                         set.type === 'trackedValue' ? 'tracked-values' : 
-                        'goals'}/${set.id}`}
+                        set.type === 'goal' ? 'goals' :
+                        'checklists'}/${set.id}`}
                 className="hover:text-primary"
               >
                 {set.name}
@@ -113,7 +152,7 @@ export default function SuperSetView() {
                   </Link>
                 ))
               )}
-              
+
               {set.type === 'goal' && (
                 (set.items as GoalType[]).map((item, index) => (
                   <Link 
@@ -128,6 +167,18 @@ export default function SuperSetView() {
                     />
                   </Link>
                 ))
+              )}
+
+              {set.type === 'checklist' && (
+                <Checklist
+                  id={set.id}
+                  name={set.name}
+                  items={set.items as ChecklistItem[]}
+                  onComplete={(itemId, date) => handleCompleteChecklistItem(set.id, itemId, date)}
+                  onClear={(itemId) => handleClearChecklistItem(set.id, itemId)}
+                  showName={false}
+                  showControls={false}
+                />
               )}
             </div>
           </section>

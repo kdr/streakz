@@ -1,15 +1,18 @@
 import { db as firebaseDb } from './firebase'
 import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
-import { Streak, Collection, Goal, GoalSet, TrackedValue, TrackedValueSet, SuperSet } from '@/types/streak'
+import { 
+  Streak, Collection, Goal, GoalSet, TrackedValue, TrackedValueSet, SuperSet,
+  ChecklistItem, Checklist
+} from '@/types/streak'
 import { format, startOfYear } from 'date-fns'
 
 interface SuperSetResponse {
   name: string
   sets: Array<{
     id: string
-    type: 'streak' | 'trackedValue' | 'goal'
+    type: 'streak' | 'trackedValue' | 'goal' | 'checklist'
     name: string
-    items: Array<Streak | TrackedValue | Goal>
+    items: Array<Streak | TrackedValue | Goal | ChecklistItem>
   }>
 }
 
@@ -283,7 +286,7 @@ class Database {
   }
 
   // Super Set methods
-  async createSuperSet(name: string, setIds: Array<{ id: string; type: 'streak' | 'trackedValue' | 'goal' }>): Promise<string> {
+  async createSuperSet(name: string, setIds: Array<{ id: string; type: 'streak' | 'trackedValue' | 'goal' | 'checklist' }>): Promise<string> {
     const superSetsRef = collection(firebaseDb, 'superSets')
     const newSuperSetRef = doc(superSetsRef)
     
@@ -306,14 +309,14 @@ class Database {
     const superSetData = superSetDoc.data() as SuperSet
     const sets: Array<{
       id: string
-      type: 'streak' | 'trackedValue' | 'goal'
+      type: 'streak' | 'trackedValue' | 'goal' | 'checklist'
       name: string
-      items: Array<Streak | TrackedValue | Goal>
+      items: Array<Streak | TrackedValue | Goal | ChecklistItem>
     }> = []
     
     for (const { id: setId, type } of superSetData.setIds) {
       let name = ''
-      let items: Array<Streak | TrackedValue | Goal> = []
+      let items: Array<Streak | TrackedValue | Goal | ChecklistItem> = []
       
       if (type === 'streak') {
         const collection = await this.getCollection(setId)
@@ -333,6 +336,12 @@ class Database {
           name = goalSet.name
           items = goalSet.goals
         }
+      } else if (type === 'checklist') {
+        const checklist = await this.getChecklist(setId)
+        if (checklist) {
+          name = checklist.name
+          items = checklist.checklistItems
+        }
       }
       
       if (name) {
@@ -348,6 +357,89 @@ class Database {
     return {
       name: superSetData.name,
       sets
+    }
+  }
+
+  // Checklist Item methods
+  async createChecklistItem(name: string): Promise<string> {
+    const checklistItemsRef = collection(firebaseDb, 'checklistItems')
+    const newChecklistItemRef = doc(checklistItemsRef)
+    
+    const checklistItem: ChecklistItem = {
+      id: newChecklistItemRef.id,
+      name: name.trim()
+    }
+    
+    await setDoc(newChecklistItemRef, checklistItem)
+    return newChecklistItemRef.id
+  }
+
+  async getChecklistItem(id: string): Promise<ChecklistItem | undefined> {
+    const checklistItemRef = doc(firebaseDb, 'checklistItems', id)
+    const checklistItemDoc = await getDoc(checklistItemRef)
+    
+    if (!checklistItemDoc.exists()) return undefined
+    return checklistItemDoc.data() as ChecklistItem
+  }
+
+  async completeChecklistItem(id: string, date: string): Promise<boolean> {
+    const checklistItemRef = doc(firebaseDb, 'checklistItems', id)
+    const checklistItemDoc = await getDoc(checklistItemRef)
+    
+    if (!checklistItemDoc.exists()) return false
+    
+    await updateDoc(checklistItemRef, {
+      completedDate: date
+    })
+    
+    return true
+  }
+
+  async clearChecklistItem(id: string): Promise<boolean> {
+    const checklistItemRef = doc(firebaseDb, 'checklistItems', id)
+    const checklistItemDoc = await getDoc(checklistItemRef)
+    
+    if (!checklistItemDoc.exists()) return false
+    
+    await updateDoc(checklistItemRef, {
+      completedDate: null
+    })
+    
+    return true
+  }
+
+  // Checklist methods
+  async createChecklist(name: string, checklistItemIds: string[]): Promise<string> {
+    const checklistsRef = collection(firebaseDb, 'checklists')
+    const newChecklistRef = doc(checklistsRef)
+    
+    const checklist: Checklist = {
+      id: newChecklistRef.id,
+      name: name.trim(),
+      checklistItemIds
+    }
+    
+    await setDoc(newChecklistRef, checklist)
+    return newChecklistRef.id
+  }
+
+  async getChecklist(id: string): Promise<{ name: string; checklistItems: ChecklistItem[] } | undefined> {
+    const checklistRef = doc(firebaseDb, 'checklists', id)
+    const checklistDoc = await getDoc(checklistRef)
+    
+    if (!checklistDoc.exists()) return undefined
+    
+    const checklistData = checklistDoc.data() as Checklist
+    const checklistItems: ChecklistItem[] = []
+    
+    for (const checklistItemId of checklistData.checklistItemIds) {
+      const checklistItem = await this.getChecklistItem(checklistItemId)
+      if (checklistItem) checklistItems.push(checklistItem)
+    }
+    
+    return {
+      name: checklistData.name,
+      checklistItems
     }
   }
 }

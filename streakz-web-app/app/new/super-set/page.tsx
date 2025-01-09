@@ -11,9 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export default function NewSuperSet() {
   const router = useRouter()
   const [name, setName] = useState('')
-  const [setEntries, setSetEntries] = useState<Array<{ id: string; type: 'streak' | 'trackedValue' | 'goal' }>>([])
+  const [setEntries, setSetEntries] = useState<Array<{ id: string; type: 'streak' | 'trackedValue' | 'goal' | 'checklist' }>>([])
   const [newId, setNewId] = useState('')
-  const [newType, setNewType] = useState<'streak' | 'trackedValue' | 'goal'>('streak')
+  const [newType, setNewType] = useState<'streak' | 'trackedValue' | 'goal' | 'checklist'>('streak')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -71,7 +71,7 @@ export default function NewSuperSet() {
       <h1 className="text-4xl font-bold mb-4">Create a Super Set</h1>
       <p className="text-lg mb-8">
         Group different types of sets together to monitor and visualize multiple collections in one place.
-        You can combine streak collections, value tracker sets, and accumulative goal sets.
+        You can combine streak collections, value tracker sets, goal sets, and checklists.
       </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -87,7 +87,7 @@ export default function NewSuperSet() {
         <div className="space-y-2">
           <Label>Add Sets</Label>
           <div className="flex gap-2">
-            <Select value={newType} onValueChange={(value: 'streak' | 'trackedValue' | 'goal') => setNewType(value)}>
+            <Select value={newType} onValueChange={(value: 'streak' | 'trackedValue' | 'goal' | 'checklist') => setNewType(value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
@@ -95,6 +95,7 @@ export default function NewSuperSet() {
                 <SelectItem value="streak">Streak Collection</SelectItem>
                 <SelectItem value="trackedValue">Value Tracker Set</SelectItem>
                 <SelectItem value="goal">Goal Set</SelectItem>
+                <SelectItem value="checklist">Checklist</SelectItem>
               </SelectContent>
             </Select>
             <Input
@@ -118,7 +119,8 @@ export default function NewSuperSet() {
                   <span className="ml-2 text-sm text-muted-foreground">
                     ({entry.type === 'streak' ? 'Streak Collection' :
                        entry.type === 'trackedValue' ? 'Value Tracker Set' :
-                       'Goal Set'})
+                       entry.type === 'goal' ? 'Goal Set' :
+                       'Checklist'})
                   </span>
                 </div>
                 <Button

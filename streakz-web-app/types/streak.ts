@@ -38,12 +38,24 @@ export interface TrackedValueSet {
   trackedValueIds: string[]
 }
 
+export interface ChecklistItem {
+  id: string
+  name: string
+  completedDate?: string // YYYY-MM-DD format when completed, undefined when not completed
+}
+
+export interface Checklist {
+  id: string
+  name: string
+  checklistItemIds: string[]
+}
+
 export interface SuperSet {
   id: string
   name: string
   setIds: Array<{
     id: string
-    type: 'streak' | 'trackedValue' | 'goal'
+    type: 'streak' | 'trackedValue' | 'goal' | 'checklist'
   }>
 }
 
