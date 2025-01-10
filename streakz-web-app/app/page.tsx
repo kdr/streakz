@@ -35,7 +35,7 @@ export default function Home() {
             <Button className="w-full">Create New Streak</Button>
           </Link>
           <Link href="/new/collection">
-            <Button className="w-full">Create New Collection</Button>
+            <Button className="w-full">Create New Streak Collection</Button>
           </Link>
           <Link href="/new/tracked-value">
             <Button className="w-full">Create New Value Tracker</Button>
@@ -44,10 +44,10 @@ export default function Home() {
             <Button className="w-full">Create New Value Tracker Set</Button>
           </Link>
           <Link href="/new/goal">
-            <Button className="w-full">Create New Goal</Button>
+            <Button className="w-full">Create New Count Goal</Button>
           </Link>
           <Link href="/new/goal-set">
-            <Button className="w-full">Create New Goal Set</Button>
+            <Button className="w-full">Create New Count Goal Set</Button>
           </Link>
           <Link href="/new/checklist-item">
             <Button className="w-full">Create New Checklist Item</Button>
