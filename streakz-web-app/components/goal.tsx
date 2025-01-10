@@ -13,13 +13,17 @@ interface GoalProps {
   onRecordProgress?: (date: string, value: number) => void
   color?: string
   showDetails?: boolean
+  variant?: 'default' | 'compact'
+  showProgressBar?: boolean
 }
 
 export function Goal({ 
   goal, 
   onRecordProgress,
   color = 'bg-green-600',
-  showDetails = true
+  showDetails = true,
+  variant = 'default',
+  showProgressBar = true
 }: GoalProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [date, setDate] = useState(() => {
@@ -39,28 +43,42 @@ export function Goal({
     }
   }
 
+  if (variant === 'compact') {
+    const isZero = Math.abs(totalProgress) < 0.0001
+    return (
+      <div className={cn("p-3 rounded-lg flex flex-col items-center justify-center", isZero ? "bg-gray-400" : color)}>
+        <h2 className="text-sm font-medium text-white/90 mb-1">{goal.name}</h2>
+        <span className="text-xl font-bold text-white">{totalProgress.toFixed(1)}</span>
+        <div className="flex items-center gap-2 text-white/80">
+          <span className="text-xs">of</span>
+          <span className="text-sm font-medium">{goal.targetValue.toFixed(1)}</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 border rounded-lg bg-card">
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold">{goal.name}</h2>
-        {showDetails && (
-          <span className="text-sm text-muted-foreground">
-            Progress: {totalProgress.toFixed(2)} / {goal.targetValue}
-          </span>
-        )}
+      <div className="grid grid-cols-3 gap-4 items-center mb-2">
+        <h2 className="text-lg font-semibold truncate">{goal.name}</h2>
+        <div className={cn("p-2 rounded-lg flex flex-col items-center justify-center", color)}>
+          <span className="text-xl font-bold text-white">{totalProgress.toFixed(1)}</span>
+          <span className="text-xs text-white/80">Current</span>
+        </div>
+        <div className={cn("p-2 rounded-lg flex flex-col items-center justify-center", color)}>
+          <span className="text-xl font-bold text-white">{goal.targetValue.toFixed(1)}</span>
+          <span className="text-xs text-white/80">Target</span>
+        </div>
       </div>
 
-      <div className="relative">
+      {showProgressBar && (
         <ProgressBar
           value={totalProgress}
           max={goal.targetValue}
           color={color}
-          className="mb-4"
+          className="h-1.5"
         />
-        <span className="absolute right-0 -top-5 text-xs text-muted-foreground">
-          Target: {goal.targetValue.toFixed(2)}
-        </span>
-      </div>
+      )}
 
       {onRecordProgress && showDetails && (
         <div className="mt-4">

@@ -12,13 +12,15 @@ interface TrackedValueSummaryProps {
   onRecordValue?: (date: string, value: number) => void
   color?: string
   showDetails?: boolean
+  variant?: 'default' | 'compact'
 }
 
 export function TrackedValueSummary({ 
   trackedValue, 
   onRecordValue,
   color = 'bg-green-600',
-  showDetails = true
+  showDetails = true,
+  variant = 'default'
 }: TrackedValueSummaryProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [date, setDate] = useState(() => {
@@ -27,12 +29,9 @@ export function TrackedValueSummary({
   })
   const [value, setValue] = useState('')
 
-  // Get latest value and calculate min/max
-  const values = Object.values(trackedValue.values)
+  // Get latest value
   const latestValue = Object.entries(trackedValue.values)
     .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))[0]?.[1] ?? trackedValue.startValue
-  const minValue = Math.min(...values, trackedValue.startValue)
-  const maxValue = Math.max(...values, trackedValue.startValue)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,28 +41,31 @@ export function TrackedValueSummary({
     }
   }
 
+  if (variant === 'compact') {
+    const isZero = Math.abs(latestValue) < 0.0001
+    return (
+      <div className={cn("p-3 rounded-lg flex flex-col items-center justify-center", isZero ? "bg-gray-400" : color)}>
+        <h2 className="text-sm font-medium text-white/90 mb-1">{trackedValue.name}</h2>
+        <span className="text-xl font-bold text-white">{Math.round(latestValue)}</span>
+        <div className="flex items-center gap-2 text-white/80">
+          <span className="text-xs">of</span>
+          <span className="text-sm font-medium">{Math.round(trackedValue.targetValue)}</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 border rounded-lg bg-card">
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold">{trackedValue.name}</h2>
-      </div>
-
-      <div className="grid grid-cols-4 gap-4 mb-4">
-        <div className={cn("p-4 rounded-lg flex flex-col items-center justify-center", color)}>
-          <span className="text-3xl font-bold text-white">{Math.round(latestValue)}</span>
-          <span className="text-sm text-white/80">Latest</span>
+      <div className="grid grid-cols-3 gap-4 items-center">
+        <h2 className="text-lg font-semibold truncate">{trackedValue.name}</h2>
+        <div className={cn("p-2 rounded-lg flex flex-col items-center justify-center", color)}>
+          <span className="text-xl font-bold text-white">{Math.round(latestValue)}</span>
+          <span className="text-xs text-white/80">Current</span>
         </div>
-        <div className={cn("p-4 rounded-lg flex flex-col items-center justify-center", color)}>
-          <span className="text-3xl font-bold text-white">{Math.round(trackedValue.targetValue)}</span>
-          <span className="text-sm text-white/80">Target</span>
-        </div>
-        <div className="p-4 rounded-lg flex flex-col items-center justify-center bg-muted">
-          <span className="text-3xl font-bold">{Math.round(minValue)}</span>
-          <span className="text-sm text-muted-foreground">Min</span>
-        </div>
-        <div className="p-4 rounded-lg flex flex-col items-center justify-center bg-muted">
-          <span className="text-3xl font-bold">{Math.round(maxValue)}</span>
-          <span className="text-sm text-muted-foreground">Max</span>
+        <div className={cn("p-2 rounded-lg flex flex-col items-center justify-center", color)}>
+          <span className="text-xl font-bold text-white">{Math.round(trackedValue.targetValue)}</span>
+          <span className="text-xs text-white/80">Target</span>
         </div>
       </div>
 

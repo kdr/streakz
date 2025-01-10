@@ -104,10 +104,10 @@ export default function SuperSetView() {
       <h1 className="text-4xl font-bold mb-8">{superSet.name}</h1>
 
       {/* Set Sections */}
-      <div className="space-y-12">
+      <div className="space-y-8">
         {superSet.sets.map(set => (
           <section key={set.id} id={set.id} className="scroll-mt-8">
-            <h2 className="text-3xl font-bold mb-6">
+            <h2 className="text-xl font-semibold mb-4">
               <Link 
                 href={`/${set.type === 'streak' ? 'collection' : 
                         set.type === 'trackedValue' ? 'tracked-values' : 
@@ -119,7 +119,7 @@ export default function SuperSetView() {
               </Link>
             </h2>
             
-            <div className="grid gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               {set.type === 'streak' && (
                 (set.items as StreakType[]).map((streak, index) => (
                   <Link 
@@ -148,6 +148,7 @@ export default function SuperSetView() {
                       trackedValue={item}
                       color={`bg-${['green', 'blue', 'purple', 'pink', 'orange', 'teal'][index % 6]}-600`}
                       showDetails={false}
+                      variant="compact"
                     />
                   </Link>
                 ))
@@ -164,6 +165,8 @@ export default function SuperSetView() {
                       goal={item}
                       color={`bg-${['green', 'blue', 'purple', 'pink', 'orange', 'teal'][index % 6]}-600`}
                       showDetails={false}
+                      variant="compact"
+                      showProgressBar={false}
                     />
                   </Link>
                 ))
