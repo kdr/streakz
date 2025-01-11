@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
+import { ProgressBar } from '@/components/ui/progress-bar'
 import type { TrackedValue } from '@/types/streak'
 
 interface TrackedValueSummaryProps {
@@ -13,14 +14,22 @@ interface TrackedValueSummaryProps {
   color?: string
   showDetails?: boolean
   variant?: 'default' | 'compact'
+  showProgressBar?: boolean
+  isReadOnly?: boolean
+  className?: string
+  minimizeText?: boolean
 }
 
-export function TrackedValueSummary({ 
-  trackedValue, 
+export function TrackedValueSummary({
+  trackedValue,
   onRecordValue,
   color = 'bg-green-600',
   showDetails = true,
-  variant = 'default'
+  variant = 'default',
+  showProgressBar = true,
+  isReadOnly = false,
+  className,
+  minimizeText = false
 }: TrackedValueSummaryProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [date, setDate] = useState(() => {
@@ -29,47 +38,52 @@ export function TrackedValueSummary({
   })
   const [value, setValue] = useState('')
 
-  // Get latest value
-  const latestValue = Object.entries(trackedValue.values)
-    .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))[0]?.[1] ?? trackedValue.startValue
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (onRecordValue && !isNaN(Number(value))) {
-      onRecordValue(date, Number(value))
+    if (onRecordValue && value) {
+      onRecordValue(date, parseFloat(value))
       setValue('')
     }
   }
 
-  if (variant === 'compact') {
-    const isZero = Math.abs(latestValue) < 0.0001
-    return (
-      <div className={cn("p-3 rounded-lg flex flex-col items-center justify-center", isZero ? "bg-gray-400" : color)}>
-        <h2 className="text-sm font-medium text-white/90 mb-1">{trackedValue.name}</h2>
-        <span className="text-xl font-bold text-white">{Math.round(latestValue)}</span>
-        <div className="flex items-center gap-2 text-white/80">
-          <span className="text-xs">of</span>
-          <span className="text-sm font-medium">{Math.round(trackedValue.targetValue)}</span>
-        </div>
-      </div>
-    )
-  }
+  const latestValue = Object.entries(trackedValue.values)
+    .sort(([a], [b]) => b.localeCompare(a))[0]?.[1] ?? trackedValue.startValue
+
+  const progressPercentage = ((latestValue - trackedValue.startValue) / (trackedValue.targetValue - trackedValue.startValue)) * 100
 
   return (
-    <div className="p-4 border rounded-lg bg-card">
-      <div className="grid grid-cols-3 gap-4 items-center">
-        <h2 className="text-lg font-semibold truncate">{trackedValue.name}</h2>
-        <div className={cn("p-2 rounded-lg flex flex-col items-center justify-center", color)}>
-          <span className="text-xl font-bold text-white">{Math.round(latestValue)}</span>
-          <span className="text-xs text-white/80">Current</span>
-        </div>
-        <div className={cn("p-2 rounded-lg flex flex-col items-center justify-center", color)}>
-          <span className="text-xl font-bold text-white">{Math.round(trackedValue.targetValue)}</span>
-          <span className="text-xs text-white/80">Target</span>
+    <div className={cn(
+      "bg-card p-6 border rounded-lg",
+      variant === 'compact' && "p-4",
+      !showProgressBar && color,
+      className
+    )}>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className={cn(
+            "font-bold",
+            variant === 'compact' ? "text-lg" : "text-2xl"
+          )}>{trackedValue.name}</h2>
+          <span className="text-sm text-muted-foreground">
+            {minimizeText ? (
+              `${latestValue.toFixed(1)} / ${trackedValue.targetValue.toFixed(1)}`
+            ) : (
+              `Current: ${latestValue.toFixed(2)} / Target: ${trackedValue.targetValue.toFixed(2)}`
+            )}
+          </span>
         </div>
       </div>
 
-      {onRecordValue && showDetails && (
+      {showProgressBar && (
+        <ProgressBar
+          value={progressPercentage}
+          max={100}
+          color={color}
+          className="mb-4"
+        />
+      )}
+
+      {!isReadOnly && onRecordValue && showDetails && (
         <div className="mt-4">
           <Button
             variant="outline"
@@ -101,7 +115,6 @@ export function TrackedValueSummary({
                   step="any"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  placeholder="Enter current value..."
                   required
                 />
               </div>

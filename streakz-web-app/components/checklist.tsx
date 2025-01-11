@@ -1,8 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { ChecklistItem } from '@/components/checklist-item'
 import type { ChecklistItem as ChecklistItemType } from '@/types/streak'
+import { format, parseISO } from 'date-fns'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface ChecklistProps {
   id: string
@@ -13,6 +15,7 @@ interface ChecklistProps {
   showLink?: boolean
   showName?: boolean
   showControls?: boolean
+  isReadOnly?: boolean
 }
 
 export function Checklist({ 
@@ -23,7 +26,8 @@ export function Checklist({
   onClear, 
   showLink = true,
   showName = true,
-  showControls = true
+  showControls = true,
+  isReadOnly = false
 }: ChecklistProps) {
   return (
     <div className="space-y-4">
@@ -45,16 +49,55 @@ export function Checklist({
       )}
 
       <div className="space-y-2">
-        {items.map((item) => (
-          <ChecklistItem
-            key={item.id}
-            item={item}
-            onComplete={showControls && onComplete ? (date) => onComplete(item.id, date) : undefined}
-            onClear={showControls && onClear ? () => onClear(item.id) : undefined}
-            showLink={showLink}
-            showControls={showControls}
-          />
-        ))}
+        {items?.map((item) => {
+          const isCompleted = !!item.completedDate
+          const latestCompletion = item.completedDate
+
+          return (
+            <div 
+              key={item.id} 
+              className={cn(
+                "flex items-center justify-between p-4 border rounded-lg",
+                isCompleted ? "bg-emerald-100 text-emerald-950" : "bg-gray-100 text-gray-950"
+              )}
+            >
+              <div>
+                <div className="font-medium">{item.name}</div>
+                {isCompleted && latestCompletion && (
+                  <div className={cn(
+                    "text-sm",
+                    isCompleted ? "text-emerald-700" : "text-muted-foreground"
+                  )}>
+                    Last completed: {format(parseISO(latestCompletion), 'MMM d, yyyy')}
+                  </div>
+                )}
+              </div>
+              {!isReadOnly && showControls && (
+                <div className="flex gap-2">
+                  {isCompleted ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onClear?.(item.id)}
+                      className="bg-white hover:bg-white/90"
+                    >
+                      Clear
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onComplete?.(item.id, new Date().toISOString())}
+                      className="bg-white hover:bg-white/90"
+                    >
+                      Complete
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

@@ -6,6 +6,7 @@ import { StreakGrid } from '@/components/streak-grid'
 import type { Streak } from '@/types/streak'
 import { ExternalLink } from 'lucide-react'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 interface CollectionResponse {
   name: string
@@ -25,6 +26,29 @@ export default function CollectionView() {
   const { id } = useParams()
   const [collection, setCollection] = useState<CollectionResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+
+  const handleShare = async () => {
+    try {
+      const response = await fetch('/api/read-only', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          parentId: id,
+          type: 'collection'
+        })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to create read-only view')
+      }
+
+      const { id: readOnlyId } = await response.json()
+      window.location.href = `/view/collections/${readOnlyId}`
+    } catch (error) {
+      console.error('Failed to create read-only view:', error)
+    }
+  }
 
   useEffect(() => {
     const fetchCollection = async () => {
@@ -54,7 +78,12 @@ export default function CollectionView() {
 
   return (
     <main className="container max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">{collection.name}</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-4xl font-bold">{collection.name}</h1>
+        <Button variant="outline" onClick={handleShare}>
+          Share as Read-only
+        </Button>
+      </div>
       <div className="space-y-8">
         {(collection.streaks || []).map((streak, index) => (
           <div key={streak.id} className="relative">

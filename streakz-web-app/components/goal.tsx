@@ -10,20 +10,24 @@ import type { Goal } from '@/types/streak'
 
 interface GoalProps {
   goal: Goal
-  onRecordProgress?: (date: string, value: number) => void
+  onRecordProgress?: (date: string, progress: number) => void
   color?: string
   showDetails?: boolean
   variant?: 'default' | 'compact'
   showProgressBar?: boolean
+  isReadOnly?: boolean
+  minimizeText?: boolean
 }
 
-export function Goal({ 
-  goal, 
+export function Goal({
+  goal,
   onRecordProgress,
   color = 'bg-green-600',
   showDetails = true,
   variant = 'default',
-  showProgressBar = true
+  showProgressBar = true,
+  isReadOnly = false,
+  minimizeText = false
 }: GoalProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [date, setDate] = useState(() => {
@@ -32,55 +36,49 @@ export function Goal({
   })
   const [value, setValue] = useState('')
 
-  // Calculate total progress
-  const totalProgress = Object.values(goal.progress).reduce((sum, val) => sum + val, 0)
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (onRecordProgress && !isNaN(Number(value))) {
-      onRecordProgress(date, Number(value))
+    if (onRecordProgress && value) {
+      onRecordProgress(date, parseFloat(value))
       setValue('')
     }
   }
 
-  if (variant === 'compact') {
-    const isZero = Math.abs(totalProgress) < 0.0001
-    return (
-      <div className={cn("p-3 rounded-lg flex flex-col items-center justify-center", isZero ? "bg-gray-400" : color)}>
-        <h2 className="text-sm font-medium text-white/90 mb-1">{goal.name}</h2>
-        <span className="text-xl font-bold text-white">{totalProgress.toFixed(1)}</span>
-        <div className="flex items-center gap-2 text-white/80">
-          <span className="text-xs">of</span>
-          <span className="text-sm font-medium">{goal.targetValue.toFixed(1)}</span>
-        </div>
-      </div>
-    )
-  }
+  const totalProgress = Object.values(goal.progress).reduce((sum, val) => sum + val, 0)
+  const progressPercentage = (totalProgress / goal.targetValue) * 100
 
   return (
-    <div className="p-4 border rounded-lg bg-card">
-      <div className="grid grid-cols-3 gap-4 items-center mb-2">
-        <h2 className="text-lg font-semibold truncate">{goal.name}</h2>
-        <div className={cn("p-2 rounded-lg flex flex-col items-center justify-center", color)}>
-          <span className="text-xl font-bold text-white">{totalProgress.toFixed(1)}</span>
-          <span className="text-xs text-white/80">Current</span>
-        </div>
-        <div className={cn("p-2 rounded-lg flex flex-col items-center justify-center", color)}>
-          <span className="text-xl font-bold text-white">{goal.targetValue.toFixed(1)}</span>
-          <span className="text-xs text-white/80">Target</span>
+    <div className={cn(
+      "bg-card p-6 border rounded-lg",
+      variant === 'compact' && "p-4",
+      !showProgressBar && color
+    )}>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className={cn(
+            "font-bold",
+            variant === 'compact' ? "text-lg" : "text-2xl"
+          )}>{goal.name}</h2>
+          <span className="text-sm text-muted-foreground">
+            {minimizeText ? (
+              `${totalProgress.toFixed(1)} / ${goal.targetValue.toFixed(1)}`
+            ) : (
+              `Progress: ${totalProgress.toFixed(1)} / Total: ${goal.targetValue.toFixed(1)}`
+            )}
+          </span>
         </div>
       </div>
 
       {showProgressBar && (
         <ProgressBar
-          value={totalProgress}
-          max={goal.targetValue}
+          value={progressPercentage}
+          max={100}
           color={color}
-          className="h-1.5"
+          className="mb-4"
         />
       )}
 
-      {onRecordProgress && showDetails && (
+      {!isReadOnly && onRecordProgress && showDetails && (
         <div className="mt-4">
           <Button
             variant="outline"
@@ -112,7 +110,6 @@ export function Goal({
                   step="any"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  placeholder="Enter progress value..."
                   required
                 />
               </div>

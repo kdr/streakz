@@ -89,6 +89,29 @@ export default function GoalSetView() {
     }
   }
 
+  const handleShare = async () => {
+    try {
+      const response = await fetch('/api/read-only', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          parentId: id,
+          type: 'goalSet'
+        })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to create read-only view')
+      }
+
+      const { id: readOnlyId } = await response.json()
+      window.location.href = `/view/goals/${readOnlyId}`
+    } catch (error) {
+      console.error('Failed to create read-only view:', error)
+    }
+  }
+
   useEffect(() => {
     fetchGoalSet()
   }, [fetchGoalSet])
@@ -105,7 +128,12 @@ export default function GoalSetView() {
   return (
     <main className="container max-w-2xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">{goalSet?.name}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-bold">{goalSet?.name}</h1>
+          <Button variant="outline" onClick={handleShare}>
+            Share as Read-only
+          </Button>
+        </div>
         <div className="mt-4 space-y-2">
           <div className="flex gap-2">
             <Button

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Checklist } from '@/components/checklist'
 import { db } from '@/lib/db'
 import type { ChecklistItem } from '@/types/streak'
+import { Button } from '@/components/ui/button'
 
 interface PageProps {
   params: {
@@ -64,6 +65,29 @@ export default function ChecklistPage({ params }: PageProps) {
     }
   }
 
+  const handleShare = async () => {
+    try {
+      const response = await fetch('/api/read-only', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          parentId: params.id,
+          type: 'checklist'
+        })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to create read-only view')
+      }
+
+      const { id: readOnlyId } = await response.json()
+      window.location.href = `/view/checklists/${readOnlyId}`
+    } catch (error) {
+      console.error('Failed to create read-only view:', error)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="container max-w-2xl py-8">
@@ -73,15 +97,22 @@ export default function ChecklistPage({ params }: PageProps) {
   }
 
   return (
-    <div className="container max-w-2xl py-8">
-      <Checklist
-        id={params.id}
-        name={name}
-        items={items}
-        onComplete={handleComplete}
-        onClear={handleClear}
-        showLink={false}
-      />
-    </div>
+    <main className="container max-w-2xl mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-4xl font-bold">{name}</h1>
+        <Button variant="outline" onClick={handleShare}>
+          Share as Read-only
+        </Button>
+      </div>
+      {items && (
+        <Checklist
+          id={params.id}
+          name={name}
+          items={items}
+          onComplete={handleComplete}
+          onClear={handleClear}
+        />
+      )}
+    </main>
   )
 } 
