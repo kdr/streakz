@@ -78,6 +78,29 @@ export default function TrackedValueSetView() {
     }
   }
 
+  const handleShare = async () => {
+    try {
+      const response = await fetch('/api/read-only', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          parentId: id,
+          type: 'trackedValueSet'
+        })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to create read-only view')
+      }
+
+      const { id: readOnlyId } = await response.json()
+      window.location.href = `/view/tracked-values/${readOnlyId}`
+    } catch (error) {
+      console.error('Failed to create read-only view:', error)
+    }
+  }
+
   useEffect(() => {
     fetchTrackedValueSet()
   }, [fetchTrackedValueSet])
@@ -94,7 +117,12 @@ export default function TrackedValueSetView() {
   return (
     <main className="container max-w-2xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">{trackedValueSet?.name}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-bold">{trackedValueSet?.name}</h1>
+          <Button variant="outline" onClick={handleShare}>
+            Share as Read-only
+          </Button>
+        </div>
         <div className="mt-4 space-y-2">
           <div className="flex gap-2">
             <Button

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Streak } from './streak'
+import Link from 'next/link'
 import type { Streak as StreakType } from '@/types/streak'
 
 interface CollectionProps {
@@ -10,13 +11,15 @@ interface CollectionProps {
   streaks: StreakType[]
   onRecordProgress?: (streakId: string, date: string) => void
   showDetails?: boolean
+  isReadOnly?: boolean
 }
 
 export function Collection({
   name,
   streaks,
   onRecordProgress,
-  showDetails = true
+  showDetails = true,
+  isReadOnly = false
 }: CollectionProps) {
   const [isExpanded, setIsExpanded] = useState(true)
 
@@ -36,13 +39,28 @@ export function Collection({
       {isExpanded && (
         <div className="space-y-4">
           {streaks.map((streak, index) => (
-            <Streak
-              key={streak.id}
-              streak={streak}
-              onRecordProgress={(date: string) => onRecordProgress?.(streak.id, date)}
-              color={`bg-${['green', 'blue', 'purple', 'pink', 'orange', 'teal'][index % 6]}-600`}
-              showDetails={showDetails}
-            />
+            isReadOnly ? (
+              <div key={streak.id}>
+                <Streak
+                  streak={streak}
+                  color={`bg-${['green', 'blue', 'purple', 'pink', 'orange', 'teal'][index % 6]}-600`}
+                  showDetails={showDetails}
+                />
+              </div>
+            ) : (
+              <Link 
+                key={streak.id}
+                href={`/streak/${streak.id}`}
+                className="block hover:opacity-80"
+              >
+                <Streak
+                  streak={streak}
+                  onRecordProgress={(date: string) => onRecordProgress?.(streak.id, date)}
+                  color={`bg-${['green', 'blue', 'purple', 'pink', 'orange', 'teal'][index % 6]}-600`}
+                  showDetails={showDetails}
+                />
+              </Link>
+            )
           ))}
         </div>
       )}

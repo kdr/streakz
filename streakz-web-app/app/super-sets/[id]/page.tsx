@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { TrackedValueSummary } from '@/components/tracked-value-summary'
 import { Goal } from '@/components/goal'
 import { Streak } from '@/components/streak'
 import { Checklist } from '@/components/checklist'
 import type { Streak as StreakType, TrackedValue, Goal as GoalType, ChecklistItem } from '@/types/streak'
+import { Button } from '@/components/ui/button'
 
 interface SuperSetResponse {
   name: string
@@ -19,8 +20,20 @@ interface SuperSetResponse {
   }>
 }
 
+const COLORS = [
+  'bg-emerald-100 text-emerald-950',
+  'bg-blue-100 text-blue-950',
+  'bg-purple-100 text-purple-950',
+  'bg-pink-100 text-pink-950',
+  'bg-orange-100 text-orange-950',
+  'bg-teal-100 text-teal-950'
+]
+
+const EMPTY_COLOR = 'bg-gray-100 text-gray-950'
+
 export default function SuperSetView() {
   const params = useParams()
+  const router = useRouter()
   const [superSet, setSuperSet] = useState<SuperSetResponse | null>(null)
   const [error, setError] = useState('')
 
@@ -101,10 +114,39 @@ export default function SuperSetView() {
 
   return (
     <main className="container max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">{superSet.name}</h1>
-
-      {/* Set Sections */}
       <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">{superSet.name}</h1>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              try {
+                const response = await fetch('/api/read-only', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    parentId: params.id,
+                    type: 'superSet'
+                  })
+                })
+
+                if (!response.ok) {
+                  throw new Error('Failed to create read-only view')
+                }
+
+                const { id } = await response.json()
+                router.push(`/view/super-sets/${id}`)
+              } catch (error) {
+                console.error('Error creating read-only view:', error)
+              }
+            }}
+          >
+            Share as Read-only
+          </Button>
+        </div>
+
         {superSet.sets.map(set => (
           <section key={set.id} id={set.id} className="scroll-mt-8">
             <h2 className="text-xl font-semibold mb-4">
@@ -138,38 +180,51 @@ export default function SuperSetView() {
               )}
               
               {set.type === 'trackedValue' && (
-                (set.items as TrackedValue[]).map((item, index) => (
-                  <Link 
-                    key={item.id}
-                    href={`/tracked-value/${item.id}`}
-                    className="block hover:opacity-80"
-                  >
-                    <TrackedValueSummary
-                      trackedValue={item}
-                      color={`bg-${['green', 'blue', 'purple', 'pink', 'orange', 'teal'][index % 6]}-600`}
-                      showDetails={false}
-                      variant="compact"
-                    />
-                  </Link>
-                ))
+                (set.items as TrackedValue[]).map((item, index) => {
+                  const latestValue = Object.entries(item.values)
+                    .sort(([a], [b]) => b.localeCompare(a))[0]?.[1] ?? item.startValue
+                  const hasProgress = latestValue !== item.startValue
+
+                  return (
+                    <Link 
+                      key={item.id}
+                      href={`/tracked-value/${item.id}`}
+                      className="block hover:opacity-80"
+                    >
+                      <TrackedValueSummary
+                        trackedValue={item}
+                        color={hasProgress ? COLORS[index % COLORS.length] : EMPTY_COLOR}
+                        showDetails={false}
+                        variant="compact"
+                        showProgressBar={false}
+                        minimizeText={true}
+                      />
+                    </Link>
+                  )
+                })
               )}
 
               {set.type === 'goal' && (
-                (set.items as GoalType[]).map((item, index) => (
-                  <Link 
-                    key={item.id}
-                    href={`/goal/${item.id}`}
-                    className="block hover:opacity-80"
-                  >
-                    <Goal
-                      goal={item}
-                      color={`bg-${['green', 'blue', 'purple', 'pink', 'orange', 'teal'][index % 6]}-600`}
-                      showDetails={false}
-                      variant="compact"
-                      showProgressBar={false}
-                    />
-                  </Link>
-                ))
+                (set.items as GoalType[]).map((item, index) => {
+                  const hasProgress = Object.keys(item.progress).length > 0
+
+                  return (
+                    <Link 
+                      key={item.id}
+                      href={`/goal/${item.id}`}
+                      className="block hover:opacity-80"
+                    >
+                      <Goal
+                        goal={item}
+                        color={hasProgress ? COLORS[index % COLORS.length] : EMPTY_COLOR}
+                        showDetails={false}
+                        variant="compact"
+                        showProgressBar={false}
+                        minimizeText={true}
+                      />
+                    </Link>
+                  )
+                })
               )}
 
               {set.type === 'checklist' && (
