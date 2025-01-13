@@ -140,13 +140,13 @@ export default function GoalSetView() {
               variant={viewType === 'progress' ? 'default' : 'outline'}
               onClick={() => setViewType('progress')}
             >
-              Progress Bars
+              Summary View
             </Button>
             <Button
-              variant={viewType === 'streak' ? 'default' : 'outline'}
-              onClick={() => setViewType('streak')}
+              variant={viewType === 'chart' ? 'default' : 'outline'}
+              onClick={() => setViewType('chart')}
             >
-              Streak View
+              Trends
             </Button>
             <Button
               variant={viewType === 'ring' ? 'default' : 'outline'}
@@ -155,10 +155,10 @@ export default function GoalSetView() {
               Ring View
             </Button>
             <Button
-              variant={viewType === 'chart' ? 'default' : 'outline'}
-              onClick={() => setViewType('chart')}
+              variant={viewType === 'streak' ? 'default' : 'outline'}
+              onClick={() => setViewType('streak')}
             >
-              Line Chart
+              Streak View
             </Button>
           </div>
           {viewType === 'chart' && (
