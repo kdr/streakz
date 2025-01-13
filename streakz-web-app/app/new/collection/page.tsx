@@ -105,7 +105,8 @@ export default function NewCollection() {
 
   return (
     <main className="container max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Create a Streak Collection</h1>
+      <h1 className="text-4xl font-bold mb-4">Create a New Collection</h1>
+      <p className="mb-8">Group related streaks together to track multiple daily habits as one unit. Great for morning routines, fitness regimens, or any set of habits you want to maintain together.</p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="name">Collection Name</Label>
