@@ -45,7 +45,8 @@ export default function NewStreak() {
 
   return (
     <main className="container max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Create a New Streak</h1>
+      <h1 className="text-4xl font-bold mb-4">Create a New Streak</h1>
+      <p className="mb-8">Track daily habits or activities you want to maintain consistently. Perfect for meditation, exercise, reading, or any other daily practice you want to build.</p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="name">Name your streak</Label>
