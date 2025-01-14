@@ -12,7 +12,7 @@ import {
 import { format, subDays, startOfYear, endOfYear, parseISO, isAfter, isSameDay, addDays } from 'date-fns'
 import type { Goal } from '@/types/streak'
 
-type TimeRange = 'ytd' | 'week' | 'month' | '90days' | 'year'
+export type TimeRange = 'ytd' | 'week' | 'month' | '90days' | 'year'
 
 interface GoalLineChartProps {
   goal: Goal
@@ -111,7 +111,7 @@ export function GoalLineChart({
           data={data}
           margin={{
             top: 5,
-            right: 30,
+            right: 50,
             left: 20,
             bottom: 5,
           }}
