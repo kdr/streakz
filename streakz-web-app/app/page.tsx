@@ -39,7 +39,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Link href="/new/streak">
-                <Button className="w-full">Create New Streak</Button>
+                <Button className="w-full">🎯 Create New Streak</Button>
               </Link>
               <p className="text-sm text-muted-foreground mt-2">
                 Start with a single habit you want to track daily.
@@ -47,7 +47,7 @@ export default function Home() {
             </div>
             <div>
               <Link href="/new/collection">
-                <Button className="w-full">Create New Streak Collection</Button>
+                <Button className="w-full">📚 Create New Streak Collection</Button>
               </Link>
               <p className="text-sm text-muted-foreground mt-2">
                 Group related habits together, like morning or evening routines.
@@ -65,7 +65,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Link href="/new/tracked-value">
-                <Button className="w-full">Create New Value Tracker</Button>
+                <Button className="w-full">📈 Create New Value Tracker</Button>
               </Link>
               <p className="text-sm text-muted-foreground mt-2">
                 Track a single value that changes over time, like your weight or savings.
@@ -73,7 +73,7 @@ export default function Home() {
             </div>
             <div>
               <Link href="/new/tracked-values">
-                <Button className="w-full">Create New Value Tracker Set</Button>
+                <Button className="w-full">📊 Create New Value Tracker Set</Button>
               </Link>
               <p className="text-sm text-muted-foreground mt-2">
                 Group related trackers together, like body measurements or financial goals.
@@ -91,7 +91,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Link href="/new/goal">
-                <Button className="w-full">Create New Count Goal</Button>
+                <Button className="w-full">🎯 Create New Count Goal</Button>
               </Link>
               <p className="text-sm text-muted-foreground mt-2">
                 Set a single goal with a target number to reach, like reading 24 books.
@@ -99,7 +99,7 @@ export default function Home() {
             </div>
             <div>
               <Link href="/new/goal-set">
-                <Button className="w-full">Create New Count Goal Set</Button>
+                <Button className="w-full">🎯 Create New Count Goal Set</Button>
               </Link>
               <p className="text-sm text-muted-foreground mt-2">
                 Group related goals together, like fitness targets or yearly objectives.
@@ -117,7 +117,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Link href="/new/checklist-item">
-                <Button className="w-full">Create New Checklist Item</Button>
+                <Button className="w-full">✅ Create New Checklist Item</Button>
               </Link>
               <p className="text-sm text-muted-foreground mt-2">
                 Create a single task or item that can be checked off.
@@ -125,7 +125,7 @@ export default function Home() {
             </div>
             <div>
               <Link href="/new/checklist">
-                <Button className="w-full">Create New Checklist</Button>
+                <Button className="w-full">📝 Create New Checklist</Button>
               </Link>
               <p className="text-sm text-muted-foreground mt-2">
                 Group related items into a checklist, like a weekly review or project tasks.
@@ -141,7 +141,7 @@ export default function Home() {
             Combine different types of trackers into a single view. Perfect for comprehensive tracking of related goals, habits, and checklists.
           </p>
           <Link href="/new/super-set">
-            <Button className="w-full" variant="outline">Create New Super Set</Button>
+            <Button className="w-full" variant="outline">🌟 Create New Super Set</Button>
           </Link>
           <p className="text-sm text-muted-foreground mt-2">
             Create a dashboard that combines streaks, value trackers, goals, and checklists in one place.
