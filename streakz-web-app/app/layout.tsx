@@ -39,10 +39,10 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <NavBar />
-          <main className="container py-4">
+          <main className="container py-4 pb-24">
             {children}
           </main>
+          <NavBar />
         </ThemeProvider>
       </body>
     </html>
