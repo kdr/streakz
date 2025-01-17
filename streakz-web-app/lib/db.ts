@@ -1,5 +1,5 @@
 import { db as firebaseDb } from './firebase'
-import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, setDoc, updateDoc, getDocs } from 'firebase/firestore'
 import { 
   Streak, Collection, Goal, GoalSet, TrackedValue, TrackedValueSet, SuperSet,
   ChecklistItem, Checklist
@@ -358,6 +358,16 @@ class Database {
       name: superSetData.name,
       sets
     }
+  }
+
+  async getAllSuperSets(): Promise<Array<{ id: string; name: string }>> {
+    const superSetsRef = collection(firebaseDb, 'superSets')
+    const querySnapshot = await getDocs(superSetsRef)
+    
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      name: doc.data().name
+    }))
   }
 
   // Checklist Item methods
