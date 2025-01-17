@@ -28,27 +28,27 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
     
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Super set ID is required' },
-        { status: 400 }
-      )
-    }
+    // If ID is provided, fetch a single super set
+    if (id) {
+      const superSet = await db.getSuperSet(id)
+      
+      if (!superSet) {
+        return NextResponse.json(
+          { error: 'Super set not found' },
+          { status: 404 }
+        )
+      }
 
-    const superSet = await db.getSuperSet(id)
+      return NextResponse.json(superSet)
+    }
     
-    if (!superSet) {
-      return NextResponse.json(
-        { error: 'Super set not found' },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json(superSet)
+    // If no ID is provided, fetch all super sets
+    const superSets = await db.getAllSuperSets()
+    return NextResponse.json(superSets)
   } catch (error) {
-    console.error('Error fetching super set:', error)
+    console.error('Error fetching super set(s):', error)
     return NextResponse.json(
-      { error: 'Failed to fetch super set' },
+      { error: 'Failed to fetch super set(s)' },
       { status: 500 }
     )
   }
