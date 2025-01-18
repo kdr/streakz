@@ -23,8 +23,8 @@ export function NavBar() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
-        <div className="flex gap-2">
+      <div className="flex h-16 items-center px-4 mx-auto max-w-screen-xl">
+        <div className="flex-1 flex justify-start">
           <Button
             variant="ghost"
             size="icon"
@@ -33,6 +33,8 @@ export function NavBar() {
             <ArrowLeft className="h-[1.2rem] w-[1.2rem]" />
             <span className="sr-only">Go back</span>
           </Button>
+        </div>
+        <div className="flex-1 flex justify-center">
           <Link href="/">
             <Button variant="ghost" size="icon">
               <Home className="h-[1.2rem] w-[1.2rem]" />
@@ -40,18 +42,20 @@ export function NavBar() {
             </Button>
           </Link>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-        >
-          {theme === 'light' ? (
-            <Moon className="h-[1.2rem] w-[1.2rem]" />
-          ) : (
-            <Sun className="h-[1.2rem] w-[1.2rem]" />
-          )}
-          <span className="sr-only">Toggle theme</span>
-        </Button>
+        <div className="flex-1 flex justify-end">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          >
+            {theme === 'light' ? (
+              <Moon className="h-[1.2rem] w-[1.2rem]" />
+            ) : (
+              <Sun className="h-[1.2rem] w-[1.2rem]" />
+            )}
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+        </div>
       </div>
     </nav>
   )
