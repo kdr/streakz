@@ -78,7 +78,7 @@ export default function ReadOnlySuperSetView() {
           <section key={set.id} id={set.id} className="scroll-mt-8">
             <h2 className="text-xl font-semibold mb-4">{set.name}</h2>
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
               {set.type === 'streak' && (
                 (set.items as StreakType[]).map((streak, index) => (
                   <StreakGrid
