@@ -55,3 +55,43 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Deployment
+
+### Deploying to Vercel
+
+1. Create a Vercel account at [vercel.com](https://vercel.com) if you haven't already
+2. Install the Vercel CLI:
+   ```bash
+   npm install -g vercel
+   ```
+3. Link your project to Vercel:
+   ```bash
+   vercel link
+   ```
+
+### Environment Variables Setup
+
+1. In your Vercel project dashboard, go to Settings > Environment Variables
+2. Add the following environment variables with your Firebase configuration:
+   - `NEXT_PUBLIC_FIREBASE_API_KEY`
+   - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+   - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+   - `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+   - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+   - `NEXT_PUBLIC_FIREBASE_APP_ID`
+
+### Deploy
+
+1. Deploy to production:
+   ```bash
+   vercel --prod
+   ```
+
+Alternatively, you can connect your GitHub repository to Vercel for automatic deployments:
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import your GitHub repository
+3. Configure your environment variables
+4. Deploy
+
+Your app will be automatically deployed on every push to the main branch.
