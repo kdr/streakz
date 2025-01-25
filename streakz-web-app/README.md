@@ -22,7 +22,28 @@ Track your daily habits and build consistency with GitHub-inspired contribution 
    - Go to Project Settings > General
    - Scroll to "Your apps" section
    - Copy the Firebase config object
-5. Create a `.env.local` file in the project root and add your Firebase config:
+5. Set up Firestore Security Rules:
+   - Go to Firestore Database > Rules
+   - Replace the default rules with:
+   ```javascript
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       // Allow users to read and write only their own data
+       match /users/{userId}/{document=**} {
+         allow read, write: if request.auth != null && request.auth.uid == userId;
+       }
+       
+       // Allow read-only access to shared data
+       match /shared/{document=**} {
+         allow read: if request.auth != null;
+         allow write: if false;
+       }
+     }
+   }
+   ```
+   - Click "Publish"
+6. Create a `.env.local` file in the project root and add your Firebase config:
    ```
    NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
