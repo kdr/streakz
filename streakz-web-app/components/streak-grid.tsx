@@ -5,29 +5,36 @@ import { Button } from '@/components/ui/button'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
+import { Input } from '@/components/ui/input'
 
 interface StreakGridProps {
   name: string
   contributions: Record<string, number>
-  onRecordToday?: () => void
-  onDecrementToday?: () => void
-  onClearToday?: () => void
+  onRecordProgress?: () => void
+  onDecrementProgress?: () => void
+  onClearProgress?: () => void
   color?: string
   year?: number
   showPadding?: boolean
   hasBorder?: boolean
+  selectedDate?: string
+  onDateChange?: (date: string) => void
+  currentValue?: number
 }
 
 export function StreakGrid({ 
   name, 
   contributions = {}, 
-  onRecordToday,
-  onDecrementToday,
-  onClearToday,
+  onRecordProgress,
+  onDecrementProgress,
+  onClearProgress,
   year = new Date().getFullYear(),
   color = 'bg-green-600',
   showPadding = true,
-  hasBorder = false
+  hasBorder = false,
+  selectedDate,
+  onDateChange,
+  currentValue = 0
 }: StreakGridProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -113,7 +120,7 @@ export function StreakGrid({
         </div>
       </div>
 
-      {onRecordToday && (
+      {onRecordProgress && (
         <div className="mt-4">
           <Button
             variant="outline"
@@ -126,10 +133,23 @@ export function StreakGrid({
             })} />
           </Button>
           {isExpanded && (
-            <div className="mt-2 flex gap-2">
-              <Button onClick={onRecordToday}>+1</Button>
-              <Button onClick={onDecrementToday} variant="outline">-1</Button>
-              <Button onClick={onClearToday} variant="outline">Clear Today</Button>
+            <div className="mt-2 space-y-2">
+              <div className="flex items-center gap-2">
+                <Input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => onDateChange?.(e.target.value)}
+                  className="flex-1"
+                />
+                <div className="text-sm text-muted-foreground whitespace-nowrap">
+                  Current: {currentValue}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={onRecordProgress}>+1</Button>
+                <Button onClick={onDecrementProgress} variant="outline">-1</Button>
+                <Button onClick={onClearProgress} variant="outline">Clear</Button>
+              </div>
             </div>
           )}
         </div>

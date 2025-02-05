@@ -9,6 +9,7 @@ export default function StreakView() {
   const { id } = useParams()
   const [streak, setStreak] = useState<Streak | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedDate, setSelectedDate] = useState(() => getLocalDate())
 
   const fetchStreak = useCallback(async () => {
     try {
@@ -30,14 +31,14 @@ export default function StreakView() {
     return `${year}-${month}-${day}`
   }
 
-  const handleRecordToday = async () => {
+  const handleRecordProgress = async (date: string) => {
     try {
       const response = await fetch('/api/streak/record', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           id,
-          date: getLocalDate()
+          date
         })
       })
       
@@ -52,14 +53,14 @@ export default function StreakView() {
     }
   }
 
-  const handleDecrementToday = async () => {
+  const handleDecrementProgress = async (date: string) => {
     try {
       const response = await fetch('/api/streak/record', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           id,
-          date: getLocalDate(),
+          date,
           action: 'decrement'
         })
       })
@@ -75,14 +76,14 @@ export default function StreakView() {
     }
   }
 
-  const handleClearToday = async () => {
+  const handleClearProgress = async (date: string) => {
     try {
       const response = await fetch('/api/streak/record', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           id,
-          date: getLocalDate(),
+          date,
           action: 'clear'
         })
       })
@@ -117,9 +118,12 @@ export default function StreakView() {
         <StreakGrid
           name={streak.name}
           contributions={streak.contributions}
-          onRecordToday={handleRecordToday}
-          onDecrementToday={handleDecrementToday}
-          onClearToday={handleClearToday}
+          onRecordProgress={() => handleRecordProgress(selectedDate)}
+          onDecrementProgress={() => handleDecrementProgress(selectedDate)}
+          onClearProgress={() => handleClearProgress(selectedDate)}
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
+          currentValue={streak.contributions[selectedDate] || 0}
         />
       )}
     </main>
