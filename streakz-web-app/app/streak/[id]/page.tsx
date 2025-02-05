@@ -7,6 +7,15 @@ import type { Streak } from '@/types/streak'
 
 export default function StreakView() {
   const { id } = useParams()
+
+  const getLocalDate = () => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const [streak, setStreak] = useState<Streak | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState(() => getLocalDate())
@@ -22,14 +31,6 @@ export default function StreakView() {
       setIsLoading(false)
     }
   }, [id])
-
-  const getLocalDate = () => {
-    const now = new Date()
-    const year = now.getFullYear()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
 
   const handleRecordProgress = async (date: string) => {
     try {
