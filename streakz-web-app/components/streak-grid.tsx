@@ -43,7 +43,9 @@ export function StreakGrid({
     const date = new Date(year, 0, 1)
     date.setDate(date.getDate() + i)
     if (date.getFullYear() !== year) return null
-    return date.toISOString().split('T')[0]
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   }).filter(Boolean) as string[]
 
   // Ensure contributions is an object
@@ -69,8 +71,10 @@ export function StreakGrid({
     return isFirstWeekOfMonth ? format(date, 'MMM') : null
   })
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', {
+  const formatDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('-').map(Number)
+    const date = new Date(year, month - 1, day, 12) // Set to noon to avoid timezone issues
+    return date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
